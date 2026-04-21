@@ -1,0 +1,5 @@
+module StringApp{
+    interface StringOperation{
+        string process(in string input);
+    };
+};
