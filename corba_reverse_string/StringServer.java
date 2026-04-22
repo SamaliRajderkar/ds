@@ -29,3 +29,18 @@ public class StringServer{
         }
     }
 }
+
+// Run :
+
+// export JAVA_HOME=$(/usr/libexec/java_home -v 1.8)
+// export PATH=$JAVA_HOME/bin:$PATH
+
+// Idlj -fall StringOp.idl
+
+// javac *.java  StringApp/*.java
+
+// Terminal 1 : orbd -ORBInitialPort 1050
+
+// Terminal 2 : java StringServer -ORBInitialPort 1050 -ORBInitialHost localhost
+
+// Terminal 3 : java StringClient -ORBInitialPort 1050 -ORBInitialHost localhost
