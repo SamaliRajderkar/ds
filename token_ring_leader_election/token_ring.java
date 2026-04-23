@@ -26,10 +26,7 @@ public class token_ring{
         int receiver = sc.nextInt();
 
         System.out.print("Enter data :");
-       // sc.nextInt();
-       // sc.nextLine();
         int data = sc.nextInt();
-       // String message = sc.nextLine();
 
         System.out.print(" ");
         System.out.println("Token Ring Algorithm :");
@@ -58,3 +55,6 @@ public class token_ring{
         System.out.println("Updated token : "+ token);
     }
 }
+
+// javac token_ring.java
+// java token_ring
