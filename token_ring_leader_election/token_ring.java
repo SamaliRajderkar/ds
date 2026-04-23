@@ -10,7 +10,7 @@ import java.util.*;
 public class token_ring{
     public static void main(String[] args){
         Scanner sc = new Scanner(System.in);
-        System.out.print("Enter number of leaders :");
+        System.out.print("Enter number of processes :");
         int n= sc.nextInt();
 
         System.out.println("Ring formed :");
@@ -19,15 +19,17 @@ public class token_ring{
         }
         System.out.println("0");
 
-        System.out.print("Enter Leader who wants to send message :");
+        System.out.print("Enter Process which sends data :");
         int sender = sc.nextInt();
 
-        System.out.print("Enter Leader who will be receiver :");
+        System.out.print("Enter Process which receives data :");
         int receiver = sc.nextInt();
 
-        System.out.print("Enter message :");
-        sc.nextLine();
-        String message = sc.nextLine();
+        System.out.print("Enter data :");
+       // sc.nextInt();
+       // sc.nextLine();
+        int data = sc.nextInt();
+       // String message = sc.nextLine();
 
         System.out.print(" ");
         System.out.println("Token Ring Algorithm :");
@@ -43,13 +45,13 @@ public class token_ring{
         }
         System.out.println(sender);
 
-        System.out.println("Leader " + sender + " sent the message : " + message);
+        System.out.println("Leader " + sender + " sent the data : " + data);
 
         for(int i=sender; i!=receiver; i =(i+1) % n){
-            System.out.println("Message " + message + " forwarded by Leader "+ i);
+            System.out.println("Data " + data + " forwarded by Leader "+ i);
         }
 
-        System.out.println("Leader " + receiver + " received the message : " + message);
+        System.out.println("Leader " + receiver + " received the data : " + data);
 
         token = sender ;
 

@@ -20,7 +20,7 @@ public class StringClient{
             System.out.println("Output : " + obj.process(s));
         }
         catch(Exception e){
-            System.out.println("Exception Error");
+            e.printStackTrace();
         }
     }
 }

@@ -25,7 +25,7 @@ public class StringServer{
             orb.run();
         }
         catch(Exception e){
-            System.out.println("Exception Error");
+            e.printStackTrace();
         }
     }
 }
