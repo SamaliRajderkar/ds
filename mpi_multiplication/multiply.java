@@ -1,3 +1,8 @@
+// Design a distributed application using MPI for computation where root
+// process has an array of elements equal to the size of processors which is
+// divided to the worker processes which calculates and displays the
+// intermediate multiplication calculated at different processors.
+
 import mpi.*;
 
 public class multiply{
