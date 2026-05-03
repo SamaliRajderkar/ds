@@ -1,60 +1,53 @@
-/*
-Problem Statement :
-Perform Leader Election using Token Ring ALgorithm.
-Also print the messages exchanged between the processes.
-*/
-
-
 import java.util.*;
 
-public class token_ring{
-    public static void main(String[] args){
+public class token_ring {
+
+    static int n;
+    static int[] priority;
+    static boolean[] active;
+
+    public static void main(String args[]) {
         Scanner sc = new Scanner(System.in);
-        System.out.print("Enter number of processes :");
-        int n= sc.nextInt();
 
-        System.out.println("Ring formed :");
-        for(int i=0;i<n;i++){
-            System.out.print(i+ " ");
-        }
-        System.out.println("0");
+        System.out.print("Enter number of processes : ");
+        n = sc.nextInt();
 
-        System.out.print("Enter Process which sends data :");
-        int sender = sc.nextInt();
+        priority = new int[n];
+        active = new boolean[n];
 
-        System.out.print("Enter Process which receives data :");
-        int receiver = sc.nextInt();
-
-        System.out.print("Enter data :");
-        int data = sc.nextInt();
-
-        System.out.print(" ");
-        System.out.println("Token Ring Algorithm :");
-        System.out.print(" ");
-
-        int token = 0;
-
-        System.out.print("Token passing: ");
-        int j = token;
-        while (j != sender) {
-            System.out.print(j + " -> ");
-            j = (j + 1) % n;
-        }
-        System.out.println(sender);
-
-        System.out.println("Leader " + sender + " sent the data : " + data);
-
-        for(int i=sender; i!=receiver; i =(i+1) % n){
-            System.out.println("Data " + data + " forwarded by Leader "+ i);
+        for (int i = 0; i < n; i++) {
+            System.out.print("Enter Priority of Process " + i + " : ");
+            priority[i] = sc.nextInt();
+            System.out.print("Is Process " + i + " active? (1=y, 0=n) : ");
+            active[i] = sc.nextInt() == 1;
         }
 
-        System.out.println("Leader " + receiver + " received the data : " + data);
+        System.out.print("Enter Initial Process : ");
+        int ini = sc.nextInt();
 
-        token = sender ;
+        System.out.println("Token starts from Process " + ini);
 
-        System.out.println("Updated token : "+ token);
+        int leader = elect(ini);
+        System.out.println("Leader process is : " + leader);
     }
-}
 
-// javac token_ring.java
-// java token_ring
+    static int elect(int pid) {
+    int leader = -1;
+    int i = pid;
+
+    while (true) {
+        if (active[i]) {
+            System.out.println("Process " + i + " passes token");
+
+            if (leader == -1 || priority[i] > priority[leader]) {
+                leader = i;
+            }
+        }
+
+        i = (i + 1) % n;
+
+        if (i == pid) break; // stop after full cycle
+    }
+    return leader;
+}
+}
