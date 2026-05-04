@@ -14,16 +14,17 @@ public class avg {
 
         int size = MPI.COMM_WORLD.Size();
         int rank = MPI.COMM_WORLD.Rank();
+        int chunk = 2;
 
-        int[] data = new int[size];
-        int[] recv = new int[1];
+        int[] data = new int[size * chunk];
+        int[] recv = new int[chunk];
         double[] res = new double[size];
         double[] temp = new double[1];
 
         // Root initializes data
         if (rank == 0) {
             System.out.println("Initialized Array:");
-            for (int i = 0; i < size; i++) {
+            for (int i = 0; i < data.length; i++) {
                 data[i] = i+1;
                 System.out.print(data[i] + " ");
             }
@@ -31,11 +32,15 @@ public class avg {
         }
 
         // Scatter (1 element per process)
-        MPI.COMM_WORLD.Scatter(data, 0, 1, MPI.INT,
-                               recv, 0, 1, MPI.INT, 0);
+        MPI.COMM_WORLD.Scatter(data, 0, chunk, MPI.INT,
+                               recv, 0, chunk, MPI.INT, 0);
 
-        // Each process keeps its value as "local average"
-        temp[0] = recv[0];
+        double sum =0;
+        for(int i =0; i<chunk; i++){
+            sum += recv[i];
+        }
+        temp[0] = sum/chunk;
+    
 
         // Gather all values
         MPI.COMM_WORLD.Allgather(temp, 0, 1, MPI.DOUBLE,
@@ -43,11 +48,11 @@ public class avg {
 
         // Root computes final average
         if (rank == 0) {
-            double sum = 0;
+            double tot = 0;
             for (int i = 0; i < size; i++) {
-                sum += res[i];
+                tot += res[i];
             }
-            System.out.println("Final Average: " + (sum / size));
+            System.out.println("Final Average: " + (tot / size));
         }
 
         MPI.Finalize();
