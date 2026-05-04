@@ -8,51 +8,46 @@
 import mpi.*;
 
 public class avg {
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) {
+
         MPI.Init(args);
 
-        int rank = MPI.COMM_WORLD.Rank();
         int size = MPI.COMM_WORLD.Size();
+        int rank = MPI.COMM_WORLD.Rank();
 
-        int chunk = 2;
-        int[] recv = new int[chunk];
-        double[] localAvg = new double[1];
-        double[] allAvg = new double[size];
+        int[] data = new int[size];
+        int[] recv = new int[1];
+        double[] res = new double[size];
+        double[] temp = new double[1];
 
-        int[] data = new int[size * chunk]; 
-
-        // Root process initializes data
+        // Root initializes data
         if (rank == 0) {
-            data = new int[size * chunk];
-            for (int i = 0; i < data.length; i++) {
-                data[i] = (i + 1) * 10;
+            System.out.println("Initialized Array:");
+            for (int i = 0; i < size; i++) {
+                data[i] = i+1;
                 System.out.print(data[i] + " ");
             }
             System.out.println();
         }
 
-        // Distribute data
-        MPI.COMM_WORLD.Scatter(data, 0, chunk, MPI.INT,
-                               recv, 0, chunk, MPI.INT, 0);
+        // Scatter (1 element per process)
+        MPI.COMM_WORLD.Scatter(data, 0, 1, MPI.INT,
+                               recv, 0, 1, MPI.INT, 0);
 
-        // Compute local average
-        double sum = 0;
-        for (int i = 0; i < chunk; i++) {
-            sum += recv[i];
-        }
-        localAvg[0] = sum / chunk;
+        // Each process keeps its value as "local average"
+        temp[0] = recv[0];
 
-        // Collect all local averages
-        MPI.COMM_WORLD.Gather(localAvg, 0, 1, MPI.DOUBLE,
-                              allAvg, 0, 1, MPI.DOUBLE, 0);
+        // Gather all values
+        MPI.COMM_WORLD.Allgather(temp, 0, 1, MPI.DOUBLE,
+                                res, 0, 1, MPI.DOUBLE);
 
-        // Final average at root
+        // Root computes final average
         if (rank == 0) {
-            double total = 0;
+            double sum = 0;
             for (int i = 0; i < size; i++) {
-                total += allAvg[i];
+                sum += res[i];
             }
-            System.out.println("Final average: " + total / size);
+            System.out.println("Final Average: " + (sum / size));
         }
 
         MPI.Finalize();
