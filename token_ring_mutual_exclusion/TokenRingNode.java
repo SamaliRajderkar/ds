@@ -3,88 +3,60 @@ import java.net.*;
 
 public class TokenRingNode {
 
-    private int myPort;
-    private int nextPort;
-    private boolean hasToken;
+    public static void main(String[] args) throws Exception {
 
-    public TokenRingNode(int myPort, int nextPort, boolean hasToken) {
-        this.myPort = myPort;
-        this.nextPort = nextPort;
-        this.hasToken = hasToken;
-    }
+        int myPort = Integer.parseInt(args[0]);
+        int nextPort = Integer.parseInt(args[1]);
+        boolean hasToken = Boolean.parseBoolean(args[2]);
 
-    public void start() throws Exception {
+        ServerSocket server = new ServerSocket(myPort);
 
-        ServerSocket serverSocket = new ServerSocket(myPort);
-
-        // If first node has token, initiate
+        // If this node starts with token
         if (hasToken) {
-            System.out.println("Initial token holder. Passing token...");
-            sendToken();
+            System.out.println("Starting with TOKEN");
+            sendToken(nextPort);
         }
 
         while (true) {
-            Socket socket = serverSocket.accept();
+            Socket socket = server.accept();
 
             BufferedReader in = new BufferedReader(
                     new InputStreamReader(socket.getInputStream()));
 
-            String message = in.readLine();
+            String msg = in.readLine();
 
-            if ("TOKEN".equals(message)) {
+            if ("TOKEN".equals(msg)) {
                 System.out.println("Received TOKEN");
 
-                enterCriticalSection();
+                // Critical Section
+                System.out.println("Entering Critical Section...");
+                Thread.sleep(2000);
+                System.out.println("Exiting Critical Section...");
 
-                sendToken();
+                // Pass token
+                sendToken(nextPort);
             }
 
             socket.close();
         }
     }
 
-    private void enterCriticalSection() throws InterruptedException {
-        System.out.println("Entering Critical Section...");
-        Thread.sleep(2000); // simulate work
-        System.out.println("Exiting Critical Section...");
-    }
+    static void sendToken(int port) throws Exception {
+        Thread.sleep(1000);
 
-    private void sendToken() {
-        try {
-            Thread.sleep(1000);
+        Socket socket = new Socket("localhost", port);
 
-            Socket socket = new Socket("localhost", nextPort);
+        PrintWriter out = new PrintWriter(
+                socket.getOutputStream(), true);
 
-            PrintWriter out = new PrintWriter(
-                    socket.getOutputStream(), true);
+        out.println("TOKEN");
 
-            out.println("TOKEN");
-            System.out.println("Token sent to port " + nextPort);
+        System.out.println("Token sent to " + port);
 
-            socket.close();
-        } catch (Exception e) {
-            System.out.println("Failed to send token. Retrying...");
-        }
-    }
-
-    public static void main(String[] args) throws Exception {
-
-        if (args.length != 3) {
-            System.out.println("Usage: java TokenRingNode <myPort> <nextPort> <hasToken>");
-            return;
-        }
-
-        int myPort = Integer.parseInt(args[0]);
-        int nextPort = Integer.parseInt(args[1]);
-        boolean hasToken = Boolean.parseBoolean(args[2]);
-
-        TokenRingNode node = new TokenRingNode(myPort, nextPort, hasToken);
-        node.start();
+        socket.close();
     }
 }
 
-
 // javac *.java
-// T1: java TokenRingNode 6000 6001 true
-// T2: java TokenRingNode 6001 6002 false
-// T3: java TokenRingNode 6002 6000 false
+// T1 : java TokenRingNode 6000 6001 true
+// T2 : java TokenRingNode 6001 6000 false
