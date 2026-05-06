@@ -4,7 +4,6 @@
 // computes the average of their subset of the numbers. Gather all averages to the root
 // process. The root process then computes the average of these numbers to get the final
 // average.
-
 import mpi.*;
 
 public class avg {
