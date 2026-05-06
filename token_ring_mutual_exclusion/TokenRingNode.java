@@ -4,56 +4,33 @@ import java.net.*;
 public class TokenRingNode {
 
     public static void main(String[] args) throws Exception {
-
-        int myPort = Integer.parseInt(args[0]);
+        int myPort   = Integer.parseInt(args[0]);
         int nextPort = Integer.parseInt(args[1]);
         boolean hasToken = Boolean.parseBoolean(args[2]);
 
         ServerSocket server = new ServerSocket(myPort);
-
-        // If this node starts with token
-        if (hasToken) {
-            System.out.println("Starting with TOKEN");
-            sendToken(nextPort);
-        }
+        if (hasToken) sendToken(nextPort);
 
         while (true) {
-            Socket socket = server.accept();
-
-            BufferedReader in = new BufferedReader(
-                    new InputStreamReader(socket.getInputStream()));
-
-            String msg = in.readLine();
+            Socket s = server.accept();
+            String msg = new BufferedReader(new InputStreamReader(s.getInputStream())).readLine();
+            s.close();
 
             if ("TOKEN".equals(msg)) {
-                System.out.println("Received TOKEN");
-
-                // Critical Section
-                System.out.println("Entering Critical Section...");
-                Thread.sleep(2000);
-                System.out.println("Exiting Critical Section...");
-
-                // Pass token
+                System.out.println("Got token → doing work...");
+                Thread.sleep(2000);                          // critical section
+                System.out.println("Done. Passing token.");
                 sendToken(nextPort);
             }
-
-            socket.close();
         }
     }
 
     static void sendToken(int port) throws Exception {
         Thread.sleep(1000);
-
-        Socket socket = new Socket("localhost", port);
-
-        PrintWriter out = new PrintWriter(
-                socket.getOutputStream(), true);
-
-        out.println("TOKEN");
-
-        System.out.println("Token sent to " + port);
-
-        socket.close();
+        Socket s = new Socket("localhost", port);
+        new PrintWriter(s.getOutputStream(), true).println("TOKEN");
+        s.close();
+        System.out.println("Token sent to port " + port);
     }
 }
 
