@@ -1,5 +1,6 @@
 import java.io.*;
 import java.net.*;
+import java.util.Scanner;
 
 public class TokenRingNode {
 
@@ -13,12 +14,12 @@ public class TokenRingNode {
 
         while (true) {
             Socket s = server.accept();
-            String msg = new BufferedReader(new InputStreamReader(s.getInputStream())).readLine();
+            String msg = new Scanner(s.getInputStream()).nextLine(); // ✅
             s.close();
 
             if ("TOKEN".equals(msg)) {
                 System.out.println("Got token → doing work...");
-                Thread.sleep(2000);                          // critical section
+                Thread.sleep(2000);
                 System.out.println("Done. Passing token.");
                 sendToken(nextPort);
             }
@@ -28,7 +29,7 @@ public class TokenRingNode {
     static void sendToken(int port) throws Exception {
         Thread.sleep(1000);
         Socket s = new Socket("localhost", port);
-        new PrintWriter(s.getOutputStream(), true).println("TOKEN");
+        s.getOutputStream().write("TOKEN\n".getBytes()); // ✅
         s.close();
         System.out.println("Token sent to port " + port);
     }
